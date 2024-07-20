@@ -1,3 +1,17 @@
+# How is going to be our Stablecoin?
+
+1. Relative Stability: anchored or pegged -> $1.00
+    1. Chainlink Price feed
+    2. Set a function to exchange ETH or BTC -> $$$
+2. Stability Mechanism (Minting): Algorithmic (Decentralized)
+    1. People can only mint the stablecoin with  enough collateral (coded)
+3. Collateral: Exogenous (Crypto)
+    1. wETH (ERC20 type)
+    2. wBTC (ERC20 type)
+
+
+
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
