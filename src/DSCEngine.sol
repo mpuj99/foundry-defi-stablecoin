@@ -534,7 +534,7 @@ contract DSCEngine is ReentrancyGuard {
 
 
 
-    function getCollateralDeposited(address user, address token) external view returns(uint256){
+    function getCollateralDepositedOfUser(address user, address token) external view returns(uint256){
         return s_collateralDeposited[user][token];
     }
 
@@ -572,5 +572,11 @@ contract DSCEngine is ReentrancyGuard {
 
     function getLiquidationBonus() public pure returns(uint256) {
         return LIQUIDATION_BONUS;
+    }
+
+
+    function getCollateralTokens() external view returns (address[] memory) {
+
+        return s_collateralTokens;
     }
 }

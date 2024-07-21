@@ -189,7 +189,7 @@ contract DSCEngineTest is StdCheats, Test {
 
     function testCanDepositCollateralWithoutMinting() public depositedCollateral {
         uint256 userDscBalance = dsc.balanceOf(USER);
-        uint256 userCollateralBalance = engine.getCollateralDeposited(USER, weth);
+        uint256 userCollateralBalance = engine.getCollateralDepositedOfUser(USER, weth);
         assertEq(userDscBalance, 0);
         assertEq(userCollateralBalance, amountCollateral);
     }
@@ -236,7 +236,7 @@ contract DSCEngineTest is StdCheats, Test {
         uint256 expectedCollateralValue = amountCollateral;
         uint256 expectedDscMinted = amountToMint;
 
-        assertEq(expectedCollateralValue, engine.getCollateralDeposited(USER, weth));
+        assertEq(expectedCollateralValue, engine.getCollateralDepositedOfUser(USER, weth));
         assertEq(expectedDscMinted, engine.getDscMinted(USER));
     }
 
@@ -380,7 +380,7 @@ contract DSCEngineTest is StdCheats, Test {
         vm.startPrank(USER);
         engine.redeemCollateral(weth, amountCollateral);
         uint256 expectedCollateral = 0;
-        uint256 actualCollateral = engine.getCollateralDeposited(weth, USER);
+        uint256 actualCollateral = engine.getCollateralDepositedOfUser(weth, USER);
         assertEq(expectedCollateral, actualCollateral);
     }
 
@@ -567,7 +567,7 @@ contract DSCEngineTest is StdCheats, Test {
 
     }
 
-    
+
 
 
 }
