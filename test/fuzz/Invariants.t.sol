@@ -61,16 +61,29 @@ contract InvariantsTest is StdInvariant, Test{
         console.log("wbtc value: ", storedWbtcValue);
         console.log("totalSupply: ", totalSupply);
         console.log("Times mint is called: ", handler.timesMintIsCalled());
+        console.log("Times Redeem and Burn is called: ", handler.timesRedeemAndBurnIsCalled());
+        console.log("Times deposit is called: ", handler.timesDepositIsCalled());
 
         assert(storedWethValue + storedWbtcValue >= totalSupply);
 
 
     }
 
-/*
+
     function invariant_functionsGettersShouldNeverRevert() public view {
-        engine.getAccountCollateralValue();
+        // engine.getAccountCollateralValue(address);
+        //engine.getAccountInformation(address);
+        // engine.getCollateralDepositedOfUser(address, token address);
+        // engine.getDscMinted(address);
+        engine.getAditionalFeedPrecision();
+        engine.getCollateralTokens();
+        engine.getLiquidationBonus();
+        engine.getPrecision();
+        
+
+
+
 
     }
-*/
+
 }

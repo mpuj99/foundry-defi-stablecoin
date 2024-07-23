@@ -6,6 +6,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import {console} from "../lib/forge-std/src/console.sol";
+import {OracleLib} from "./libraries/OracleLib.sol";
 
 /**
  * @title DSCEngine
@@ -42,7 +43,12 @@ contract DSCEngine is ReentrancyGuard {
     error DSCEngine__HealthFactorNotImproved();
     error DSCEngine__DscOrCollateralIsZero();
 
-    
+
+    ////////////////////
+    /// Types        //
+    ////////////////////
+
+    using OracleLib for AggregatorV3Interface;
     
     
     //////////////////////
@@ -131,7 +137,7 @@ contract DSCEngine is ReentrancyGuard {
             s_priceFeeds[tokenAddresses[i]] = priceFeedAddresses[i];
             s_collateralTokens.push(tokenAddresses[i]);
             AggregatorV3Interface priceFeed = AggregatorV3Interface(s_priceFeeds[tokenAddresses[i]]);
-            (, int256 price, , , ) = priceFeed.latestRoundData();
+            (, int256 price, , , ) = priceFeed.staleCheckLatestRoundData();
             s_tokenPrices[tokenAddresses[i]] = uint256(price);
 
         }
@@ -236,7 +242,7 @@ contract DSCEngine is ReentrancyGuard {
     ) public moreThanZero(amountCollateral) nonReentrant {
         _redeemCollateral(msg.sender, msg.sender, tokenCollateralAddress, amountCollateral);
 
-        //_revertIfHealthFactorIsBroken(msg.sender);
+        _revertIfHealthFactorIsBroken(msg.sender);
     }
 
     
@@ -508,7 +514,7 @@ contract DSCEngine is ReentrancyGuard {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(
             s_priceFeeds[token]
         );
-        (, int256 price, , , ) = priceFeed.latestRoundData();
+        (, int256 price, , , ) = priceFeed.staleCheckLatestRoundData();
         // 1 ETH = $1000
         // Value returned by ChainLink will be 1000 * 1e8
         return
@@ -522,7 +528,7 @@ contract DSCEngine is ReentrancyGuard {
     function getTokenAmountFromUsd(address token, uint256 usdAmountInWei) public view returns (uint256){
         // 1 ETH == $2000 --> 1000$ worth of ETH == 1000 / 2000 = 0.5 ETH
         AggregatorV3Interface priceFeed = AggregatorV3Interface(s_priceFeeds[token]);
-        (, int256 price,,,) = priceFeed.latestRoundData();
+        (, int256 price,,,) = priceFeed.staleCheckLatestRoundData();
         return (usdAmountInWei * PRECISION) / (uint256(price) * ADDITIONAL_FEED_PRECISION);
     }
 
@@ -561,6 +567,10 @@ contract DSCEngine is ReentrancyGuard {
         return collateralAddress;
     }
 
+    function getCollateralTokenPriceFeed(address token) public view returns (address) {
+        return s_priceFeeds[token];
+    }
+
 
     function getAditionalFeedPrecision() public pure returns(uint256) {
         return ADDITIONAL_FEED_PRECISION;
@@ -578,5 +588,17 @@ contract DSCEngine is ReentrancyGuard {
     function getCollateralTokens() external view returns (address[] memory) {
 
         return s_collateralTokens;
+    }
+
+
+    function abs(int256 x) public pure returns (uint256) {
+        // Check if x is negative
+        if (x < 0) {
+            // If negative, return the negation of x (make it positive)
+            return uint256(-x);
+        } else {
+            // If non-negative, return x as it is
+            return uint256(x);
+        }
     }
 }

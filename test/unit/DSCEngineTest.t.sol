@@ -376,7 +376,7 @@ contract DSCEngineTest is StdCheats, Test {
     }
 
 
-    function testCanRedeemCollateral() public depositCollateralAndMint {
+    function testCanRedeemCollateral() public depositedCollateral {
         vm.startPrank(USER);
         engine.redeemCollateral(weth, amountCollateral);
         uint256 expectedCollateral = 0;
